@@ -1,0 +1,16 @@
+# Sekrety - NIGDY do repo!
+.env
+*.env
+appsettings.Development.json
+
+# .NET
+bin/
+obj/
+*.user
+
+# Node / React
+node_modules/
+dist/
+
+# macOS
+.DS_Store
