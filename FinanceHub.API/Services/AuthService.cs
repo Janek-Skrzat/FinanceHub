@@ -47,6 +47,28 @@ namespace FinanceHub.API.Services
                 LastName = user.LastName
             };
         }
+
+        public LoginResponse Login(LoginRequest request)
+        {
+            var existingUser = _db.Users.FirstOrDefault(u => u.Email == request.Email);
+            if (existingUser == null)
+            {
+                throw new Exception("Nieprawidłowy email lub hasło");
+            }
+
+            var isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, existingUser.PasswordHash);
+            if (!isPasswordValid)
+            {
+                throw new Exception("Nieprawidłowy email lub hasło");
+            }
+            var token = GenerateJwtToken(existingUser);
+            return new LoginResponse
+            {
+                SuccessMessage = "Zalogowano pomyślnie!",
+                Token = token
+            };
+        }
+
         private string GenerateJwtToken(User user)
         {
             var key = new SymmetricSecurityKey(
