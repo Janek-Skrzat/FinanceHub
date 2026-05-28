@@ -1,14 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
+using FinanceHub.API.Services;
+using FinanceHub.API.DTOs.Auth;
 namespace FinanceHub.API.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
 public class AuthController : ControllerBase
 {
-    [HttpPost("register")]
-    public IActionResult Register()
+    private readonly AuthService _authService;
+    public AuthController(AuthService authService)
     {
-        return Ok("działa!");
+        _authService = authService;
+    }
+    [HttpPost("register")]
+    public IActionResult Register([FromBody] RegisterRequest request)
+    {
+        var result = _authService.Register(request);
+        return Ok(result);
     }
     [HttpPost("login")]
     public IActionResult Login()
@@ -25,4 +33,6 @@ public class AuthController : ControllerBase
     {
         return Ok("działa!");
     }
+
+
 }
