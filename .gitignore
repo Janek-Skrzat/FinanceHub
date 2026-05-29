@@ -17,3 +17,12 @@ dist/
 
 # VS Code REST Client
 *.http
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
