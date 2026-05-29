@@ -22,6 +22,8 @@ builder.Services.AddAuthentication("Bearer")
     });
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<TransactionService>();
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
