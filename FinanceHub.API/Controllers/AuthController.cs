@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using FinanceHub.API.Services;
 using FinanceHub.API.DTOs.Auth;
+
 namespace FinanceHub.API.Controllers;
 
 [ApiController]
@@ -8,10 +9,12 @@ namespace FinanceHub.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly AuthService _authService;
+    
     public AuthController(AuthService authService)
     {
         _authService = authService;
     }
+
     [HttpPost("register")]
     public IActionResult Register([FromBody] RegisterRequest request)
     {
@@ -25,6 +28,7 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
@@ -38,16 +42,16 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
     [HttpPost("logout")]
     public IActionResult Logout()
     {
         return Ok("działa!");
     }
+
     [HttpPost("refresh")]
     public IActionResult Refresh()
     {
         return Ok("działa!");
     }
-
-
 }
