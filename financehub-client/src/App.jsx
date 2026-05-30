@@ -3,6 +3,7 @@ import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import Dashboard from './pages/Dashboard'
 import Categories from './pages/Categories'
+import Transactions from './pages/Transactions'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/categories" element={<Categories />} />
+        <Route path="/transactions" element={<Transactions />} />
       </Routes>
     </BrowserRouter>
   )
