@@ -11,6 +11,8 @@ obj/
 # Node / React
 node_modules/
 dist/
+.vite/
+financehub-client/.vite/
 
 # macOS
 .DS_Store
