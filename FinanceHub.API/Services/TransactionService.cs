@@ -45,7 +45,7 @@ namespace FinanceHub.API.Services
                 Amount = amount,
                 Currency = currency,
                 Type = type,
-                Date = date,
+                Date = DateTime.SpecifyKind(date, DateTimeKind.Utc),
                 Description = description
             };
 
@@ -64,7 +64,7 @@ namespace FinanceHub.API.Services
             transaction.Amount = amount;
             transaction.Currency = currency;
             transaction.Type = type;
-            transaction.Date = date;
+            transaction.Date = DateTime.SpecifyKind(date, DateTimeKind.Utc);
             transaction.Description = description;
 
             _db.SaveChanges();

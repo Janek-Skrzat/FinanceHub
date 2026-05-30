@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using FinanceHub.API.Services;
+using FinanceHub.API.DTOs.Transactions;
 using Microsoft.AspNetCore.Authorization;
 
 namespace FinanceHub.API.Controllers;
@@ -42,16 +43,50 @@ public class TransactionController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create()
+    public IActionResult Create([FromBody] CreateTransactionRequest request)
     {
-        return Ok("wkrótce — potrzebujemy DTO!");
+        try
+        {
+            var userId = GetUserId();
+            var transaction = _transactionService.Create(
+                userId,
+                request.SubCategoryId,
+                request.Amount,
+                request.Currency,
+                request.Type,
+                request.Date,
+                request.Description);
+            return Created("", transaction);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id)
+    public IActionResult Update(int id, [FromBody] UpdateTransactionRequest request)
     {
-        return Ok("wkrótce — potrzebujemy DTO!");
+        try
+        {
+            var userId = GetUserId();
+            var transaction = _transactionService.Update(
+                id,
+                userId,
+                request.Amount,
+                request.Currency,
+                request.Type,
+                request.Date,
+                request.Description);
+            return Ok(transaction);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
+
+
 
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
