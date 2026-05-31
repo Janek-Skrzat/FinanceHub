@@ -13,5 +13,6 @@ namespace FinanceHub.API.Data
         public DbSet<SubCategory> SubCategories { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Transfer> Transfers { get; set; }
     }
 }
