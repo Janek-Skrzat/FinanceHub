@@ -41,5 +41,17 @@ npm run dev
 - Strona Login i Register
 - Dashboard z wylogowaniem
 
+### Sprint 2
+- Kategorie i podkategorie
+- Transakcje (wydatki i przychody)
+- Filtrowanie transakcji
+- Axios interceptor (JWT auto-header)
+
+### Sprint 3
+- Konta finansowe (CRUD)
+- Transfery między kontami (atomowe)
+- Integracja NBP API (kursy walut)
+- Net Worth na dashboardzie
+
 ## Status
-🚧 Sprint 2 w budowie
+🚧 Sprint 4 w budowie
