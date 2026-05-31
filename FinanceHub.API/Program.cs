@@ -24,8 +24,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<AccountService>();
-
-
+builder.Services.AddScoped<TransferService>();
 
 var app = builder.Build();
 
