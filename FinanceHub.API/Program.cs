@@ -23,6 +23,9 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<TransactionService>();
+builder.Services.AddScoped<AccountService>();
+
+
 
 var app = builder.Build();
 
