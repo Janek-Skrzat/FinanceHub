@@ -6,9 +6,10 @@ import Categories from './pages/Categories'
 import Transactions from './pages/Transactions'
 import Accounts from './pages/Accounts'
 import Transfers from './pages/Transfers'
-import Layout from './components/Layout'
 import Goals from './pages/Goals'
 import Liabilities from './pages/Liabilities'
+import Charts from './pages/Charts'
+import Layout from './components/Layout'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/transfers" element={<Layout><Transfers /></Layout>} />
         <Route path="/goals" element={<Layout><Goals /></Layout>} />
         <Route path="/liabilities" element={<Layout><Liabilities /></Layout>} />
+        <Route path="/charts" element={<Layout><Charts /></Layout>} />
       </Routes>
     </BrowserRouter>
   )

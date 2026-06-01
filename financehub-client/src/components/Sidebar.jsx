@@ -9,7 +9,7 @@ const navItems = [
     { path: '/categories', icon: 'ti-tag', label: 'Kategorie' },
     { path: '/goals', icon: 'ti-target', label: 'Cele' },
     { path: '/liabilities', icon: 'ti-credit-card', label: 'Zobowiązania' },
-
+    { path: '/charts', icon: 'ti-chart-bar', label: 'Wykresy' },
 ]
 
 function Sidebar({ isOpen, onToggle, isDark, onToggleMode }) {
