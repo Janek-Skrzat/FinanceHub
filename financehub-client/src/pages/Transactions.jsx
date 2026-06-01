@@ -17,11 +17,10 @@ function Transactions() {
     const [dateTo, setDateTo] = useState('')
 
     useEffect(() => {
-        axiosInstance.get('/transaction')
-            .then(response => setTransactions(response.data))
-        axiosInstance.get('/subcategory')
-            .then(response => setSubCategories(response.data))
+        axiosInstance.get('/transaction').then(r => setTransactions(r.data))
+        axiosInstance.get('/subcategory').then(r => setSubCategories(r.data))
     }, [])
+
     const filtered = transactions.filter(t => {
         const matchSearch = !search || t.description?.toLowerCase().includes(search.toLowerCase())
         const matchType = filterType === 'all' || t.type === filterType
@@ -29,6 +28,25 @@ function Transactions() {
         const matchTo = !dateTo || new Date(t.date) <= new Date(dateTo)
         return matchSearch && matchType && matchFrom && matchTo
     })
+
+    const exportCSV = () => {
+        const headers = ['Data', 'Opis', 'Kwota', 'Waluta', 'Typ']
+        const rows = filtered.map(t => [
+            new Date(t.date).toLocaleDateString('pl-PL'),
+            t.description || '',
+            t.amount,
+            t.currency,
+            t.type === 'income' ? 'Przychód' : 'Wydatek'
+        ])
+        const csv = [headers, ...rows].map(r => r.join(';')).join('\n')
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'transakcje.csv'
+        a.click()
+        URL.revokeObjectURL(url)
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -62,15 +80,26 @@ function Transactions() {
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h1 style={{ fontSize: '18px', fontWeight: '500', color: 'var(--text-primary)' }}>Transakcje</h1>
-                <button onClick={() => setShowForm(!showForm)} style={{
-                    display: 'flex', alignItems: 'center', gap: '6px',
-                    padding: '8px 16px', borderRadius: '8px', border: 'none',
-                    background: 'var(--accent)', color: '#fff',
-                    fontSize: '13px', cursor: 'pointer'
-                }}>
-                    <i className="ti ti-plus" style={{ fontSize: '14px' }} aria-hidden="true"></i>
-                    Dodaj transakcję
-                </button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={exportCSV} style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '8px 16px', borderRadius: '8px',
+                        border: '0.5px solid var(--border)', background: 'transparent',
+                        color: 'var(--text-secondary)', fontSize: '13px', cursor: 'pointer'
+                    }}>
+                        <i className="ti ti-download" style={{ fontSize: '14px' }} aria-hidden="true"></i>
+                        Eksport CSV
+                    </button>
+                    <button onClick={() => setShowForm(!showForm)} style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '8px 16px', borderRadius: '8px', border: 'none',
+                        background: 'var(--accent)', color: '#fff',
+                        fontSize: '13px', cursor: 'pointer'
+                    }}>
+                        <i className="ti ti-plus" style={{ fontSize: '14px' }} aria-hidden="true"></i>
+                        Dodaj transakcję
+                    </button>
+                </div>
             </div>
 
             {showForm && (
@@ -122,24 +151,19 @@ function Transactions() {
                     </form>
                 </div>
             )}
+
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '8px', marginBottom: '16px' }}>
                 <div style={{ position: 'relative' }}>
                     <i className="ti ti-search" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px', color: 'var(--text-secondary)' }} aria-hidden="true"></i>
-                    <input
-                        style={{ ...inputStyle, paddingLeft: '32px' }}
-                        type="text"
-                        placeholder="Szukaj opisu..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
+                    <input style={{ ...inputStyle, paddingLeft: '32px' }} type="text" placeholder="Szukaj opisu..." value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
                 <select style={inputStyle} value={filterType} onChange={(e) => setFilterType(e.target.value)}>
                     <option value="all">Typ: Wszystkie</option>
                     <option value="expense">Wydatki</option>
                     <option value="income">Przychody</option>
                 </select>
-                <input style={inputStyle} type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} placeholder="Od daty" />
-                <input style={inputStyle} type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} placeholder="Do daty" />
+                <input style={inputStyle} type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+                <input style={inputStyle} type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
             </div>
 
             <div style={{ borderRadius: '10px', background: 'var(--bg-card)', border: '0.5px solid var(--border)', overflow: 'hidden' }}>
@@ -148,7 +172,7 @@ function Transactions() {
                         <div key={h} style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text-secondary)' }}>{h}</div>
                     ))}
                 </div>
-                {transactions.length === 0 && (
+                {filtered.length === 0 && (
                     <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '13px' }}>
                         Brak transakcji
                     </div>
@@ -157,11 +181,9 @@ function Transactions() {
                     <div key={t.id} style={{
                         display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
                         padding: '12px 16px', alignItems: 'center',
-                        borderBottom: i < transactions.length - 1 ? '0.5px solid var(--border)' : 'none',
+                        borderBottom: i < filtered.length - 1 ? '0.5px solid var(--border)' : 'none',
                     }}>
-                        <div style={{ fontSize: '13px', color: 'var(--text-primary)' }}>
-                            {t.description || '—'}
-                        </div>
+                        <div style={{ fontSize: '13px', color: 'var(--text-primary)' }}>{t.description || '—'}</div>
                         <div style={{ fontSize: '13px', fontWeight: '500', color: t.type === 'income' ? '#15803d' : '#b91c1c' }}>
                             {t.type === 'income' ? '+' : '-'}{t.amount.toLocaleString()} {t.currency}
                         </div>
