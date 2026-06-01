@@ -16,5 +16,6 @@ namespace FinanceHub.API.Data
         public DbSet<Transfer> Transfers { get; set; }
         public DbSet<ExchangeRate> ExchangeRates { get; set; }
         public DbSet<Goal> Goals { get; set; }
+        public DbSet<Liability> Liabilities { get; set; }
     }
 }

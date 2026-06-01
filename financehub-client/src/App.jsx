@@ -8,6 +8,7 @@ import Accounts from './pages/Accounts'
 import Transfers from './pages/Transfers'
 import Layout from './components/Layout'
 import Goals from './pages/Goals'
+import Liabilities from './pages/Liabilities'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/accounts" element={<Layout><Accounts /></Layout>} />
         <Route path="/transfers" element={<Layout><Transfers /></Layout>} />
         <Route path="/goals" element={<Layout><Goals /></Layout>} />
+        <Route path="/liabilities" element={<Layout><Liabilities /></Layout>} />
       </Routes>
     </BrowserRouter>
   )

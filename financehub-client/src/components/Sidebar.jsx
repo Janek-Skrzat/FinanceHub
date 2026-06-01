@@ -8,6 +8,8 @@ const navItems = [
     { path: '/transfers', icon: 'ti-transfer', label: 'Transfery' },
     { path: '/categories', icon: 'ti-tag', label: 'Kategorie' },
     { path: '/goals', icon: 'ti-target', label: 'Cele' },
+    { path: '/liabilities', icon: 'ti-credit-card', label: 'Zobowiązania' },
+
 ]
 
 function Sidebar({ isOpen, onToggle, isDark, onToggleMode }) {

@@ -27,6 +27,7 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<TransferService>();
 builder.Services.AddHttpClient<CurrencyService>();
 builder.Services.AddScoped<GoalService>();
+builder.Services.AddScoped<LiabilityService>();
 
 
 var app = builder.Build();
