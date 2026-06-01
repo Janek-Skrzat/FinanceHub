@@ -7,6 +7,7 @@ const navItems = [
     { path: '/accounts', icon: 'ti-wallet', label: 'Konta' },
     { path: '/transfers', icon: 'ti-transfer', label: 'Transfery' },
     { path: '/categories', icon: 'ti-tag', label: 'Kategorie' },
+    { path: '/goals', icon: 'ti-target', label: 'Cele' },
 ]
 
 function Sidebar({ isOpen, onToggle, isDark, onToggleMode }) {

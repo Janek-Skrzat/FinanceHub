@@ -7,6 +7,7 @@ import Transactions from './pages/Transactions'
 import Accounts from './pages/Accounts'
 import Transfers from './pages/Transfers'
 import Layout from './components/Layout'
+import Goals from './pages/Goals'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/transactions" element={<Layout><Transactions /></Layout>} />
         <Route path="/accounts" element={<Layout><Accounts /></Layout>} />
         <Route path="/transfers" element={<Layout><Transfers /></Layout>} />
+        <Route path="/goals" element={<Layout><Goals /></Layout>} />
       </Routes>
     </BrowserRouter>
   )
