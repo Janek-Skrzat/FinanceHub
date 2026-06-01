@@ -6,6 +6,7 @@ import Categories from './pages/Categories'
 import Transactions from './pages/Transactions'
 import Accounts from './pages/Accounts'
 import Transfers from './pages/Transfers'
+import Layout from './components/Layout'
 
 function App() {
   return (
@@ -14,11 +15,11 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/categories" element={<Categories />} />
-        <Route path="/transactions" element={<Transactions />} />
-        <Route path="/accounts" element={<Accounts />} />
-        <Route path="/transfers" element={<Transfers />} />
+        <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
+        <Route path="/categories" element={<Layout><Categories /></Layout>} />
+        <Route path="/transactions" element={<Layout><Transactions /></Layout>} />
+        <Route path="/accounts" element={<Layout><Accounts /></Layout>} />
+        <Route path="/transfers" element={<Layout><Transfers /></Layout>} />
       </Routes>
     </BrowserRouter>
   )
