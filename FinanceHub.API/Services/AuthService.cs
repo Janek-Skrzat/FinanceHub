@@ -21,7 +21,8 @@ namespace FinanceHub.API.Services
         }
         public RegisterResponse Register(RegisterRequest request)
         {
-            var existingUser = _db.Users.FirstOrDefault(u => u.Email == request.Email);
+            var normalizedEmail = request.Email.ToLowerInvariant();
+            var existingUser = _db.Users.FirstOrDefault(u => u.Email == normalizedEmail);
             if (existingUser != null)
             {
                 throw new Exception("Email już istnieje");
@@ -32,7 +33,7 @@ namespace FinanceHub.API.Services
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                Email = request.Email,
+                Email = normalizedEmail,
                 PasswordHash = passwordHash
             };
 
@@ -51,7 +52,7 @@ namespace FinanceHub.API.Services
 
         public LoginResponse Login(LoginRequest request)
         {
-            var existingUser = _db.Users.FirstOrDefault(u => u.Email == request.Email);
+            var existingUser = _db.Users.FirstOrDefault(u => u.Email == request.Email.ToLowerInvariant());
             if (existingUser == null)
             {
                 throw new Exception("Nieprawidłowy email lub hasło");
@@ -72,8 +73,9 @@ namespace FinanceHub.API.Services
 
         private string GenerateJwtToken(User user)
         {
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_config["JwtSettings:Secret"]!));
+            var secret = _config["JwtSettings:Secret"]
+                ?? throw new InvalidOperationException("JwtSettings:Secret nie jest skonfigurowany");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

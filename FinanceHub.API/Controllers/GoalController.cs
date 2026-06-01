@@ -19,7 +19,9 @@ public class GoalController : ControllerBase
 
     private int GetUserId()
     {
-        return int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        var claim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (claim == null) throw new UnauthorizedAccessException();
+        return int.Parse(claim);
     }
 
     [HttpGet]
@@ -61,6 +63,7 @@ public class GoalController : ControllerBase
             request.TargetAmount,
             request.CurrentAmount,
             request.Deadline);
+        if (goal == null) return NotFound();
         return Ok(goal);
     }
 

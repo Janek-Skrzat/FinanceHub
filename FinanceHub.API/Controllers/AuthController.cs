@@ -1,15 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using FinanceHub.API.Services;
 using FinanceHub.API.DTOs.Auth;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace FinanceHub.API.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[EnableRateLimiting("auth")]
 public class AuthController : ControllerBase
 {
     private readonly AuthService _authService;
-    
+
     public AuthController(AuthService authService)
     {
         _authService = authService;

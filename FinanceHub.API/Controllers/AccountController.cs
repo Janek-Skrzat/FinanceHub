@@ -19,7 +19,9 @@ public class AccountController : ControllerBase
 
     private int GetUserId()
     {
-        return int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        var claim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (claim == null) throw new UnauthorizedAccessException();
+        return int.Parse(claim);
     }
     [HttpGet]
     public IActionResult GetAll()
@@ -33,6 +35,7 @@ public class AccountController : ControllerBase
     {
         var userId = GetUserId();
         var account = _accountService.GetById(id, userId);
+        if (account == null) return NotFound();
         return Ok(account);
     }
     [HttpPost]
@@ -62,6 +65,7 @@ public class AccountController : ControllerBase
             request.Currency,
             request.InterestRate,
             request.MaturityDate);
+        if (account == null) return NotFound();
         return Ok(account);
     }
     [HttpDelete("{id}")]

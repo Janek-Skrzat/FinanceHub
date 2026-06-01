@@ -76,13 +76,14 @@ function Charts() {
             return d >= from && d <= to
         })
         const byDate = filtered.reduce((acc, t) => {
-            const date = new Date(t.date).toLocaleDateString('pl-PL')
-            if (!acc[date]) acc[date] = { date, income: 0, expense: 0 }
-            if (t.type === 'income') acc[date].income += t.amount
-            else acc[date].expense += t.amount
+            const isoDate = t.date.slice(0, 10)
+            const label = new Date(t.date).toLocaleDateString('pl-PL')
+            if (!acc[isoDate]) acc[isoDate] = { date: label, isoDate, income: 0, expense: 0 }
+            if (t.type === 'income') acc[isoDate].income += t.amount
+            else acc[isoDate].expense += t.amount
             return acc
         }, {})
-        return Object.values(byDate).sort((a, b) => new Date(a.date) - new Date(b.date))
+        return Object.values(byDate).sort((a, b) => a.isoDate.localeCompare(b.isoDate))
     }
 
     const inputStyle = {

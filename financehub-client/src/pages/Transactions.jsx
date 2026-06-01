@@ -29,6 +29,13 @@ function Transactions() {
         return matchSearch && matchType && matchFrom && matchTo
     })
 
+    const escapeCSV = (val) => {
+        const s = String(val ?? '')
+        if (/^[=+\-@\t\r]/.test(s)) return `'${s}`
+        if (s.includes(';') || s.includes('"') || s.includes('\n')) return `"${s.replace(/"/g, '""')}"`
+        return s
+    }
+
     const exportCSV = () => {
         const headers = ['Data', 'Opis', 'Kwota', 'Waluta', 'Typ']
         const rows = filtered.map(t => [
@@ -38,7 +45,7 @@ function Transactions() {
             t.currency,
             t.type === 'income' ? 'Przychód' : 'Wydatek'
         ])
-        const csv = [headers, ...rows].map(r => r.join(';')).join('\n')
+        const csv = [headers, ...rows].map(r => r.map(escapeCSV).join(';')).join('\n')
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')

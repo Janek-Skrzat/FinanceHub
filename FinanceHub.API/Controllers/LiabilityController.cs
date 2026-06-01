@@ -19,7 +19,9 @@ public class LiabilityController : ControllerBase
 
     private int GetUserId()
     {
-        return int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        var claim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (claim == null) throw new UnauthorizedAccessException();
+        return int.Parse(claim);
     }
 
     [HttpGet]
@@ -63,6 +65,7 @@ public class LiabilityController : ControllerBase
             request.RemainingAmount,
             request.MonthlyPayment,
             request.Deadline);
+        if (liability == null) return NotFound();
         return Ok(liability);
     }
 

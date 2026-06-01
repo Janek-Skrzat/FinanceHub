@@ -20,6 +20,9 @@ namespace FinanceHub.API.Services
         }
         public Transfer Execute(int userId, int fromAccountId, int toAccountId, decimal amount, string currency, DateTime date, string? description)
         {
+            if (amount <= 0) throw new Exception("Kwota musi być większa od zera");
+            if (fromAccountId == toAccountId) throw new Exception("Konta źródłowe i docelowe muszą być różne");
+
             var fromAccount = _db.Accounts.FirstOrDefault(a => a.Id == fromAccountId && a.UserId == userId);
             if (fromAccount == null) throw new Exception("Konto źródłowe nie istnieje");
 

@@ -19,7 +19,9 @@ public class TransactionController : ControllerBase
 
     private int GetUserId()
     {
-        return int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        var claim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (claim == null) throw new UnauthorizedAccessException();
+        return int.Parse(claim);
     }
 
     [HttpGet]
@@ -78,6 +80,7 @@ public class TransactionController : ControllerBase
                 request.Type,
                 request.Date,
                 request.Description);
+            if (transaction == null) return NotFound();
             return Ok(transaction);
         }
         catch (Exception ex)
