@@ -44,7 +44,7 @@ npm run dev
 ### Sprint 2
 - Kategorie i podkategorie
 - Transakcje (wydatki i przychody)
-- Filtrowanie transakcji
+- Filtrowanie i wyszukiwanie transakcji
 - Axios interceptor (JWT auto-header)
 
 ### Sprint 3
@@ -53,5 +53,13 @@ npm run dev
 - Integracja NBP API (kursy walut)
 - Net Worth na dashboardzie
 
+### Sprint 4
+- Cele oszczędnościowe z paskiem postępu
+- Zobowiązania kredytowe
+- Wykresy interaktywne (Recharts)
+- Eksport transakcji do CSV
+- Profesjonalne UI (dark/light mode, sidebar)
+- Security fixes (rate limiting, CSV injection, email normalization)
+
 ## Status
-🚧 Sprint 4 w budowie
+✅ Aplikacja ukończona — gotowa do deploymentu
