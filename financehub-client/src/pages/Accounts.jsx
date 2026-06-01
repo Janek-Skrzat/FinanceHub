@@ -2,24 +2,25 @@ import { useState, useEffect } from 'react'
 import axiosInstance from '../api/axiosInstance'
 
 function Accounts() {
+    const [accounts, setAccounts] = useState([])
     const [name, setName] = useState('')
     const [type, setType] = useState('')
     const [balance, setBalance] = useState('')
     const [currency, setCurrency] = useState('PLN')
     const [interesrate, setInteresrate] = useState('')
     const [maturitydate, setMaturityDate] = useState('')
-    const [accounts, setAccounts] = useState([])
+    const [showForm, setShowForm] = useState(false)
 
     useEffect(() => {
         axiosInstance.get('/account')
             .then(response => setAccounts(response.data))
     }, [])
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
             await axiosInstance.post('/account', {
-                name,
-                type,
+                name, type,
                 balance: parseFloat(balance),
                 currency,
                 interestRate: interesrate ? parseFloat(interesrate) : null,
@@ -27,39 +28,114 @@ function Accounts() {
             })
             const response = await axiosInstance.get('/account')
             setAccounts(response.data)
-            setName('')
-            setType('')
-            setBalance('')
-            setMaturityDate('')
-            setInteresrate('')
+            setName(''); setType(''); setBalance('')
+            setMaturityDate(''); setInteresrate('')
+            setShowForm(false)
         } catch (error) {
             console.log('Błąd:', error)
         }
     }
+
+    const inputStyle = {
+        width: '100%', padding: '8px 12px', borderRadius: '8px',
+        border: '0.5px solid var(--border)', background: 'var(--bg-primary)',
+        color: 'var(--text-primary)', fontSize: '13px', outline: 'none'
+    }
+
+    const labelStyle = {
+        fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block'
+    }
+
     return (
         <div>
-            <h1>Konta</h1>
-            <ul>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '18px', fontWeight: '500', color: 'var(--text-primary)' }}>Konta</h1>
+                <button onClick={() => setShowForm(!showForm)} style={{
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '8px 16px', borderRadius: '8px', border: 'none',
+                    background: 'var(--accent)', color: '#fff',
+                    fontSize: '13px', cursor: 'pointer'
+                }}>
+                    <i className="ti ti-plus" style={{ fontSize: '14px' }} aria-hidden="true"></i>
+                    Dodaj konto
+                </button>
+            </div>
+
+            {showForm && (
+                <div style={{ padding: '20px', borderRadius: '10px', background: 'var(--bg-card)', border: '0.5px solid var(--border)', marginBottom: '20px' }}>
+                    <h2 style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-primary)', marginBottom: '16px' }}>Nowe konto</h2>
+                    <form onSubmit={handleSubmit}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                            <div>
+                                <label style={labelStyle}>Nazwa konta</label>
+                                <input style={inputStyle} type="text" placeholder="np. Konto PKO" value={name} onChange={(e) => setName(e.target.value)} />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Typ konta</label>
+                                <select style={inputStyle} value={type} onChange={(e) => setType(e.target.value)}>
+                                    <option value="">Wybierz typ</option>
+                                    <option value="Bankowe">Bankowe</option>
+                                    <option value="Oszczednosciowe">Oszczędnościowe</option>
+                                    <option value="Lokata">Lokata</option>
+                                    <option value="Maklerskie">Maklerskie</option>
+                                    <option value="Gotowka">Gotówka</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Saldo początkowe</label>
+                                <input style={inputStyle} type="number" placeholder="0.00" value={balance} onChange={(e) => setBalance(e.target.value)} />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Waluta</label>
+                                <select style={inputStyle} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+                                    <option value="PLN">PLN</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="USD">USD</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Oprocentowanie (opcjonalne)</label>
+                                <input style={inputStyle} type="number" placeholder="np. 5.5" value={interesrate} onChange={(e) => setInteresrate(e.target.value)} />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Data końca (opcjonalne)</label>
+                                <input style={inputStyle} type="date" value={maturitydate} onChange={(e) => setMaturityDate(e.target.value)} />
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <button type="submit" style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: 'var(--accent)', color: '#fff', fontSize: '13px', cursor: 'pointer' }}>
+                                Zapisz
+                            </button>
+                            <button type="button" onClick={() => setShowForm(false)} style={{ padding: '8px 20px', borderRadius: '8px', border: '0.5px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontSize: '13px', cursor: 'pointer' }}>
+                                Anuluj
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {accounts.map(account => (
-                    <li key={account.id}>
-                        {account.name} — {account.balance} {account.currency} — {account.type}
-                    </li>
+                    <div key={account.id} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', borderRadius: '10px', background: 'var(--bg-card)', border: '0.5px solid var(--border)' }}>
+                        <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'var(--accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <i className="ti ti-building-bank" style={{ fontSize: '18px', color: 'var(--accent)' }} aria-hidden="true"></i>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-primary)' }}>{account.name}</div>
+                            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>{account.type}</div>
+                        </div>
+                        <div style={{ width: '0.5px', height: '36px', background: 'var(--border)' }}></div>
+                        <div style={{ textAlign: 'right', minWidth: '120px' }}>
+                            <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--accent)' }}>
+                                {account.balance.toLocaleString()} {account.currency}
+                            </div>
+                            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>Saldo aktualne</div>
+                        </div>
+                    </div>
                 ))}
-            </ul>
-            <form onSubmit={handleSubmit}>
-                <input type="text" placeholder="Nazwa konta" value={name} onChange={(e) => setName(e.target.value)} />
-                <input type="text" placeholder="Typ konta" value={type} onChange={(e) => setType(e.target.value)} />
-                <input type="number" placeholder="Saldo" value={balance} onChange={(e) => setBalance(e.target.value)} />
-                <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
-                    <option value="PLN">PLN</option>
-                    <option value="EUR">EUR</option>
-                    <option value="USD">USD</option>
-                </select>
-                <input type="number" placeholder="Oprocentowanie (opcjonalne)" value={interesrate} onChange={(e) => setInteresrate(e.target.value)} />
-                <input type="date" placeholder="Data końca (opcjonalne)" value={maturitydate} onChange={(e) => setMaturityDate(e.target.value)} />
-                <button type="submit">Dodaj konto</button>
-            </form>
+            </div>
         </div>
     )
 }
+
 export default Accounts
