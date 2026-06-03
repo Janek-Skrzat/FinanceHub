@@ -1,17 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Sidebar from './Sidebar'
 import '../theme.css'
 
 function Layout({ children }) {
     const [isOpen, setIsOpen] = useState(true)
-    const [isDark, setIsDark] = useState(true)
+    const [isDark, setIsDark] = useState(() => {
+        const saved = localStorage.getItem('theme')
+        if (saved) return saved === 'dark'
+        return window.matchMedia('(prefers-color-scheme: dark)').matches
+    })
 
-    useEffect(() => {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-        setIsDark(prefersDark)
-    }, [])
+    const toggleMode = () => {
+        setIsDark(prev => {
+            localStorage.setItem('theme', !prev ? 'dark' : 'light')
+            return !prev
+        })
+    }
 
-    const toggleMode = () => setIsDark(!isDark)
     const toggleSidebar = () => setIsOpen(!isOpen)
 
     return (
