@@ -24,10 +24,17 @@ function Charts() {
     const [dateTo, setDateTo] = useState('')
     const [generated, setGenerated] = useState(false)
     const [summary, setSummary] = useState(null)
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        axiosInstance.get('/transaction').then(r => setTransactions(r.data))
-        axiosInstance.get('/subcategory').then(r => setSubCategories(r.data))
+        Promise.all([
+            axiosInstance.get('/transaction'),
+            axiosInstance.get('/subcategory')
+        ]).then(([transRes, subRes]) => {
+            setTransactions(transRes.data)
+            setSubCategories(subRes.data)
+            setLoading(false)
+        })
         document.title = 'Wykresy — FinanceHub'
 
     }, [])
@@ -93,6 +100,13 @@ function Charts() {
         border: '0.5px solid var(--border)', background: 'var(--bg-primary)',
         color: 'var(--text-primary)', fontSize: '12px', outline: 'none'
     }
+
+    if (loading) return (
+        <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-secondary)' }}>
+            <i className="ti ti-loader-2" style={{ fontSize: '32px' }}></i>
+            <div style={{ marginTop: '8px', fontSize: '13px' }}>Ładowanie...</div>
+        </div>
+    )
 
     const chartData = getChartData()
     const lineData = getLineData()

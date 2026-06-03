@@ -6,11 +6,15 @@ function Categories() {
     const [categories, setCategories] = useState([])
     const [name, setName] = useState('')
     const [showForm, setShowForm] = useState(false)
+    const [loading, setLoading] = useState(true)
     const { showToast } = useToast()
 
     useEffect(() => {
         axiosInstance.get('/category')
-            .then(response => setCategories(response.data))
+            .then(response => {
+                setCategories(response.data)
+                setLoading(false)
+            })
         document.title = 'Kategorie — FinanceHub'
 
     }, [])
@@ -36,6 +40,14 @@ function Categories() {
     }
 
     const icons = ['ti-shopping-cart', 'ti-car', 'ti-home', 'ti-device-gamepad', 'ti-heart', 'ti-shirt', 'ti-coin', 'ti-dots']
+
+    if (loading) return (
+        <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-secondary)' }}>
+            <i className="ti ti-loader-2" style={{ fontSize: '32px' }}></i>
+            <div style={{ marginTop: '8px', fontSize: '13px' }}>Ładowanie...</div>
+        </div>
+    )
+
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>

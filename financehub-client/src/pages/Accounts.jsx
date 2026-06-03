@@ -18,11 +18,15 @@ function Accounts() {
     const [editType, setEditType] = useState('')
     const [editBalance, setEditBalance] = useState('')
     const [editCurrency, setEditCurrency] = useState('PLN')
+    const [loading, setLoading] = useState(true)
     const { showToast } = useToast()
 
     useEffect(() => {
         axiosInstance.get('/account')
-            .then(response => setAccounts(response.data))
+            .then(response => {
+                setAccounts(response.data)
+                setLoading(false)
+            })
         document.title = 'Konta — FinanceHub'
     }, [])
 
@@ -95,6 +99,13 @@ function Accounts() {
     const labelStyle = {
         fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block'
     }
+
+    if (loading) return (
+        <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-secondary)' }}>
+            <i className="ti ti-loader-2" style={{ fontSize: '32px' }}></i>
+            <div style={{ marginTop: '8px', fontSize: '13px' }}>Ładowanie...</div>
+        </div>
+    )
 
     return (
         <div>

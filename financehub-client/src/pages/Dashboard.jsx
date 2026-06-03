@@ -7,10 +7,14 @@ function Dashboard() {
     const { logout } = useAuth()
     const navigate = useNavigate()
     const [netWorth, setNetWorth] = useState(null)
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         axiosInstance.get('/dashboard/networth')
-            .then(response => setNetWorth(response.data))
+            .then(response => {
+                setNetWorth(response.data)
+                setLoading(false)
+            })
         document.title = 'Dashboard — FinanceHub'
     }, [])
 
@@ -18,6 +22,13 @@ function Dashboard() {
         logout()
         navigate('/login')
     }
+
+    if (loading) return (
+        <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-secondary)' }}>
+            <i className="ti ti-loader-2" style={{ fontSize: '32px' }}></i>
+            <div style={{ marginTop: '8px', fontSize: '13px' }}>Ładowanie...</div>
+        </div>
+    )
 
     return (
         <div>

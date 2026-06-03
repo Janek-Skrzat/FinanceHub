@@ -11,10 +11,14 @@ function Goals() {
     const [deadline, setDeadline] = useState('')
     const [showForm, setShowForm] = useState(false)
     const [deleteId, setDeleteId] = useState(null)
+    const [loading, setLoading] = useState(true)
     const { showToast } = useToast()
 
     useEffect(() => {
-        axiosInstance.get('/goal').then(response => setGoals(response.data))
+        axiosInstance.get('/goal').then(response => {
+            setGoals(response.data)
+            setLoading(false)
+        })
         document.title = 'Cele — FinanceHub'
 
     }, [])
@@ -59,6 +63,13 @@ function Goals() {
     const labelStyle = {
         fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block'
     }
+
+    if (loading) return (
+        <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-secondary)' }}>
+            <i className="ti ti-loader-2" style={{ fontSize: '32px' }}></i>
+            <div style={{ marginTop: '8px', fontSize: '13px' }}>Ładowanie...</div>
+        </div>
+    )
 
     return (
         <div>

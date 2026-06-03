@@ -18,11 +18,18 @@ function Transactions() {
     const [dateFrom, setDateFrom] = useState('')
     const [dateTo, setDateTo] = useState('')
     const [deleteId, setDeleteId] = useState(null)
+    const [loading, setLoading] = useState(true)
     const { showToast } = useToast()
 
     useEffect(() => {
-        axiosInstance.get('/transaction').then(r => setTransactions(r.data))
-        axiosInstance.get('/subcategory').then(r => setSubCategories(r.data))
+        Promise.all([
+            axiosInstance.get('/transaction'),
+            axiosInstance.get('/subcategory')
+        ]).then(([transRes, subRes]) => {
+            setTransactions(transRes.data)
+            setSubCategories(subRes.data)
+            setLoading(false)
+        })
         document.title = 'Transakcje — FinanceHub'
     }, [])
 
@@ -101,6 +108,13 @@ function Transactions() {
     const labelStyle = {
         fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block'
     }
+
+    if (loading) return (
+        <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-secondary)' }}>
+            <i className="ti ti-loader-2" style={{ fontSize: '32px' }}></i>
+            <div style={{ marginTop: '8px', fontSize: '13px' }}>Ładowanie...</div>
+        </div>
+    )
 
     return (
         <div>

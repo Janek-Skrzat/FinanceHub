@@ -12,11 +12,18 @@ function Transfers() {
     const [date, setDate] = useState('')
     const [description, setDescription] = useState('')
     const [showForm, setShowForm] = useState(false)
+    const [loading, setLoading] = useState(true)
     const { showToast } = useToast()
 
     useEffect(() => {
-        axiosInstance.get('/account').then(r => setAccounts(r.data))
-        axiosInstance.get('/transfer').then(r => setTransfers(r.data))
+        Promise.all([
+            axiosInstance.get('/account'),
+            axiosInstance.get('/transfer')
+        ]).then(([accountsRes, transfersRes]) => {
+            setAccounts(accountsRes.data)
+            setTransfers(transfersRes.data)
+            setLoading(false)
+        })
         document.title = 'Transfery — FinanceHub'
 
     }, [])
@@ -52,6 +59,13 @@ function Transfers() {
     }
 
     const getAccountName = (id) => accounts.find(a => a.id === id)?.name || `Konto ${id}`
+
+    if (loading) return (
+        <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-secondary)' }}>
+            <i className="ti ti-loader-2" style={{ fontSize: '32px' }}></i>
+            <div style={{ marginTop: '8px', fontSize: '13px' }}>Ładowanie...</div>
+        </div>
+    )
 
     return (
         <div>
