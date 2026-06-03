@@ -13,6 +13,11 @@ function Accounts() {
     const [maturitydate, setMaturityDate] = useState('')
     const [showForm, setShowForm] = useState(false)
     const [deleteId, setDeleteId] = useState(null)
+    const [editId, setEditId] = useState(null)
+    const [editName, setEditName] = useState('')
+    const [editType, setEditType] = useState('')
+    const [editBalance, setEditBalance] = useState('')
+    const [editCurrency, setEditCurrency] = useState('PLN')
     const { showToast } = useToast()
 
     useEffect(() => {
@@ -51,6 +56,33 @@ function Accounts() {
         } catch (error) {
             showToast('Błąd usuwania', 'error')
             setDeleteId(null)
+        }
+    }
+
+    const startEdit = (account) => {
+        setEditId(account.id)
+        setEditName(account.name)
+        setEditType(account.type)
+        setEditBalance(account.balance)
+        setEditCurrency(account.currency)
+    }
+
+    const handleEdit = async () => {
+        try {
+            await axiosInstance.put(`/account/${editId}`, {
+                name: editName,
+                type: editType,
+                balance: parseFloat(editBalance),
+                currency: editCurrency,
+                interestRate: null,
+                maturityDate: null
+            })
+            const response = await axiosInstance.get('/account')
+            setAccounts(response.data)
+            setEditId(null)
+            showToast('Konto zaktualizowane!')
+        } catch (error) {
+            showToast('Błąd edycji', 'error')
         }
     }
 
@@ -129,28 +161,64 @@ function Accounts() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {accounts.map(account => (
-                    <div key={account.id} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', borderRadius: '10px', background: 'var(--bg-card)', border: '0.5px solid var(--border)' }}>
-                        <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'var(--accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <i className="ti ti-building-bank" style={{ fontSize: '18px', color: 'var(--accent)' }} aria-hidden="true"></i>
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-primary)' }}>{account.name}</div>
-                            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>{account.type}</div>
-                        </div>
-                        <div style={{ width: '0.5px', height: '36px', background: 'var(--border)' }}></div>
-                        <div style={{ textAlign: 'right', minWidth: '120px' }}>
-                            <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--accent)' }}>
-                                {account.balance.toLocaleString()} {account.currency}
+                    <div key={account.id} style={{ padding: '14px 16px', borderRadius: '10px', background: 'var(--bg-card)', border: `0.5px solid ${editId === account.id ? 'var(--accent)' : 'var(--border)'}` }}>
+                        {editId === account.id ? (
+                            // Tryb edycji — inline
+                            <div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+                                    <input style={inputStyle} type="text" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Nazwa" />
+                                    <select style={inputStyle} value={editType} onChange={(e) => setEditType(e.target.value)}>
+                                        <option value="Bankowe">Bankowe</option>
+                                        <option value="Oszczednosciowe">Oszczędnościowe</option>
+                                        <option value="Lokata">Lokata</option>
+                                        <option value="Maklerskie">Maklerskie</option>
+                                        <option value="Gotowka">Gotówka</option>
+                                    </select>
+                                    <input style={inputStyle} type="number" value={editBalance} onChange={(e) => setEditBalance(e.target.value)} placeholder="Saldo" />
+                                    <select style={inputStyle} value={editCurrency} onChange={(e) => setEditCurrency(e.target.value)}>
+                                        <option value="PLN">PLN</option>
+                                        <option value="EUR">EUR</option>
+                                        <option value="USD">USD</option>
+                                    </select>
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button onClick={handleEdit} style={{ padding: '6px 16px', borderRadius: '8px', border: 'none', background: 'var(--accent)', color: '#fff', fontSize: '12px', cursor: 'pointer' }}>Zapisz</button>
+                                    <button onClick={() => setEditId(null)} style={{ padding: '6px 16px', borderRadius: '8px', border: '0.5px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontSize: '12px', cursor: 'pointer' }}>Anuluj</button>
+                                </div>
                             </div>
-                            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>Saldo aktualne</div>
-                        </div>
-                        <button onClick={() => setDeleteId(account.id)} style={{
-                            padding: '6px 12px', borderRadius: '8px', border: 'none',
-                            background: '#fee2e2', color: '#b91c1c',
-                            fontSize: '12px', cursor: 'pointer'
-                        }}>
-                            <i className="ti ti-trash" style={{ fontSize: '14px' }} aria-hidden="true"></i>
-                        </button>
+                        ) : (
+                            // Tryb normalny
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'var(--accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <i className="ti ti-building-bank" style={{ fontSize: '18px', color: 'var(--accent)' }} aria-hidden="true"></i>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-primary)' }}>{account.name}</div>
+                                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>{account.type}</div>
+                                </div>
+                                <div style={{ width: '0.5px', height: '36px', background: 'var(--border)' }}></div>
+                                <div style={{ textAlign: 'right', minWidth: '120px' }}>
+                                    <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--accent)' }}>
+                                        {account.balance.toLocaleString()} {account.currency}
+                                    </div>
+                                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>Saldo aktualne</div>
+                                </div>
+                                <button onClick={() => startEdit(account)} style={{
+                                    padding: '6px 12px', borderRadius: '8px', border: 'none',
+                                    background: 'var(--accent-light)', color: 'var(--accent)',
+                                    fontSize: '12px', cursor: 'pointer'
+                                }}>
+                                    <i className="ti ti-pencil" style={{ fontSize: '14px' }} aria-hidden="true"></i>
+                                </button>
+                                <button onClick={() => setDeleteId(account.id)} style={{
+                                    padding: '6px 12px', borderRadius: '8px', border: 'none',
+                                    background: '#fee2e2', color: '#b91c1c',
+                                    fontSize: '12px', cursor: 'pointer'
+                                }}>
+                                    <i className="ti ti-trash" style={{ fontSize: '14px' }} aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
