@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import axiosInstance from '../api/axiosInstance'
+import { useToast } from '../context/ToastContext'
 
 function Categories() {
     const [categories, setCategories] = useState([])
     const [name, setName] = useState('')
     const [showForm, setShowForm] = useState(false)
+    const { showToast } = useToast()
 
     useEffect(() => {
         axiosInstance.get('/category')
@@ -19,8 +21,9 @@ function Categories() {
             setCategories(response.data)
             setName('')
             setShowForm(false)
+            showToast('Kategoria dodana!')
         } catch (error) {
-            console.log('Błąd:', error)
+            showToast('Błąd', 'error')
         }
     }
 

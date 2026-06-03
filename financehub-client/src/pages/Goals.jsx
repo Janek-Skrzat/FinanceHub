@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import axiosInstance from '../api/axiosInstance'
+import { useToast } from '../context/ToastContext'
+
 
 function Goals() {
     const [goals, setGoals] = useState([])
@@ -8,6 +10,8 @@ function Goals() {
     const [currentAmount, setCurrentAmount] = useState('')
     const [deadline, setDeadline] = useState('')
     const [showForm, setShowForm] = useState(false)
+    const { showToast } = useToast()
+
 
     useEffect(() => {
         axiosInstance.get('/goal')
@@ -27,8 +31,10 @@ function Goals() {
             setGoals(response.data)
             setName(''); setTargetAmount(''); setCurrentAmount(''); setDeadline('')
             setShowForm(false)
+            showToast('Cel dodany!')
+
         } catch (error) {
-            console.log('Błąd:', error)
+            showToast('Błąd', 'error')
         }
     }
 

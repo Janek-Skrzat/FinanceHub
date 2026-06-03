@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import axiosInstance from '../api/axiosInstance'
+import { useToast } from '../context/ToastContext'
+
 
 function Transactions() {
     const [transactions, setTransactions] = useState([])
@@ -15,6 +17,7 @@ function Transactions() {
     const [filterType, setFilterType] = useState('all')
     const [dateFrom, setDateFrom] = useState('')
     const [dateTo, setDateTo] = useState('')
+    const { showToast } = useToast()
 
     useEffect(() => {
         axiosInstance.get('/transaction').then(r => setTransactions(r.data))
@@ -69,8 +72,9 @@ function Transactions() {
             setTransactions(response.data)
             setAmount(''); setDate(''); setDescription('')
             setShowForm(false)
+            showToast('Transakcja zapisana!')
         } catch (error) {
-            console.log('Błąd:', error)
+            showToast('Błąd zapisu transakcji', 'error')
         }
     }
 

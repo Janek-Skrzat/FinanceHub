@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axiosInstance from '../api/axiosInstance'
+import { useToast } from '../context/ToastContext'
 
 function Liabilities() {
     const [liabilities, setLiabilities] = useState([])
@@ -9,6 +10,8 @@ function Liabilities() {
     const [monthlyPayment, setMonthlyPayment] = useState('')
     const [deadline, setDeadline] = useState('')
     const [showForm, setShowForm] = useState(false)
+    const { showToast } = useToast()
+
 
     useEffect(() => {
         axiosInstance.get('/liability')
@@ -30,8 +33,9 @@ function Liabilities() {
             setName(''); setTotalAmount(''); setRemainingAmount('')
             setMonthlyPayment(''); setDeadline('')
             setShowForm(false)
+            showToast('Zobowiązania dodane!')
         } catch (error) {
-            console.log('Błąd:', error)
+            showToast('Błąd', 'error')
         }
     }
 

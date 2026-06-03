@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { useToast } from '../context/ToastContext'
+
 import axiosInstance from '../api/axiosInstance'
 
 function Accounts() {
@@ -10,6 +12,8 @@ function Accounts() {
     const [interesrate, setInteresrate] = useState('')
     const [maturitydate, setMaturityDate] = useState('')
     const [showForm, setShowForm] = useState(false)
+    const { showToast } = useToast()
+
 
     useEffect(() => {
         axiosInstance.get('/account')
@@ -31,8 +35,11 @@ function Accounts() {
             setName(''); setType(''); setBalance('')
             setMaturityDate(''); setInteresrate('')
             setShowForm(false)
+            showToast('Konto zostało dodane!')
+
         } catch (error) {
-            console.log('Błąd:', error)
+            showToast('Błąd podczas dodawania konta', 'error')
+
         }
     }
 
