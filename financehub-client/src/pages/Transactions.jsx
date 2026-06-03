@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axiosInstance from '../api/axiosInstance'
 import { useToast } from '../context/ToastContext'
-
+import ConfirmModal from '../components/ConfirmModal'
 
 function Transactions() {
     const [transactions, setTransactions] = useState([])
@@ -17,6 +17,7 @@ function Transactions() {
     const [filterType, setFilterType] = useState('all')
     const [dateFrom, setDateFrom] = useState('')
     const [dateTo, setDateTo] = useState('')
+    const [deleteId, setDeleteId] = useState(null)
     const { showToast } = useToast()
 
     useEffect(() => {
@@ -75,6 +76,19 @@ function Transactions() {
             showToast('Transakcja zapisana!')
         } catch (error) {
             showToast('Błąd zapisu transakcji', 'error')
+        }
+    }
+
+    const handleDelete = async () => {
+        try {
+            await axiosInstance.delete(`/transaction/${deleteId}`)
+            const response = await axiosInstance.get('/transaction')
+            setTransactions(response.data)
+            setDeleteId(null)
+            showToast('Transakcja usunięta!')
+        } catch (error) {
+            showToast('Błąd usuwania', 'error')
+            setDeleteId(null)
         }
     }
 
@@ -178,8 +192,8 @@ function Transactions() {
             </div>
 
             <div style={{ borderRadius: '10px', background: 'var(--bg-card)', border: '0.5px solid var(--border)', overflow: 'hidden' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '10px 16px', borderBottom: '0.5px solid var(--border)', background: 'var(--bg-primary)' }}>
-                    {['Opis', 'Kwota', 'Typ', 'Data'].map(h => (
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 40px', padding: '10px 16px', borderBottom: '0.5px solid var(--border)', background: 'var(--bg-primary)' }}>
+                    {['Opis', 'Kwota', 'Typ', 'Data', ''].map(h => (
                         <div key={h} style={{ fontSize: '11px', fontWeight: '500', color: 'var(--text-secondary)' }}>{h}</div>
                     ))}
                 </div>
@@ -190,7 +204,7 @@ function Transactions() {
                 )}
                 {filtered.map((t, i) => (
                     <div key={t.id} style={{
-                        display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr',
+                        display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 40px',
                         padding: '12px 16px', alignItems: 'center',
                         borderBottom: i < filtered.length - 1 ? '0.5px solid var(--border)' : 'none',
                     }}>
@@ -210,9 +224,22 @@ function Transactions() {
                         <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
                             {new Date(t.date).toLocaleDateString('pl-PL')}
                         </div>
+                        <button onClick={() => setDeleteId(t.id)} style={{
+                            padding: '4px 8px', borderRadius: '6px', border: 'none',
+                            background: '#fee2e2', color: '#b91c1c', cursor: 'pointer'
+                        }}>
+                            <i className="ti ti-trash" style={{ fontSize: '13px' }} aria-hidden="true"></i>
+                        </button>
                     </div>
                 ))}
             </div>
+
+            <ConfirmModal
+                isOpen={deleteId !== null}
+                message="Czy na pewno chcesz usunąć tę transakcję? Tej akcji nie można cofnąć."
+                onConfirm={handleDelete}
+                onCancel={() => setDeleteId(null)}
+            />
         </div>
     )
 }

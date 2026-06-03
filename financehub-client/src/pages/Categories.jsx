@@ -27,7 +27,7 @@ function Categories() {
         }
     }
 
-    const inputStyle = {
+    const inputStyle = { 
         width: '100%', padding: '8px 12px', borderRadius: '8px',
         border: '0.5px solid var(--border)', background: 'var(--bg-primary)',
         color: 'var(--text-primary)', fontSize: '13px', outline: 'none'

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useToast } from '../context/ToastContext'
-
 import axiosInstance from '../api/axiosInstance'
+import ConfirmModal from '../components/ConfirmModal'
 
 function Accounts() {
     const [accounts, setAccounts] = useState([])
@@ -12,8 +12,8 @@ function Accounts() {
     const [interesrate, setInteresrate] = useState('')
     const [maturitydate, setMaturityDate] = useState('')
     const [showForm, setShowForm] = useState(false)
+    const [deleteId, setDeleteId] = useState(null)
     const { showToast } = useToast()
-
 
     useEffect(() => {
         axiosInstance.get('/account')
@@ -36,10 +36,21 @@ function Accounts() {
             setMaturityDate(''); setInteresrate('')
             setShowForm(false)
             showToast('Konto zostało dodane!')
-
         } catch (error) {
             showToast('Błąd podczas dodawania konta', 'error')
+        }
+    }
 
+    const handleDelete = async () => {
+        try {
+            await axiosInstance.delete(`/account/${deleteId}`)
+            const response = await axiosInstance.get('/account')
+            setAccounts(response.data)
+            setDeleteId(null)
+            showToast('Konto usunięte!')
+        } catch (error) {
+            showToast('Błąd usuwania', 'error')
+            setDeleteId(null)
         }
     }
 
@@ -48,7 +59,6 @@ function Accounts() {
         border: '0.5px solid var(--border)', background: 'var(--bg-primary)',
         color: 'var(--text-primary)', fontSize: '13px', outline: 'none'
     }
-
     const labelStyle = {
         fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block'
     }
@@ -110,12 +120,8 @@ function Accounts() {
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                            <button type="submit" style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: 'var(--accent)', color: '#fff', fontSize: '13px', cursor: 'pointer' }}>
-                                Zapisz
-                            </button>
-                            <button type="button" onClick={() => setShowForm(false)} style={{ padding: '8px 20px', borderRadius: '8px', border: '0.5px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontSize: '13px', cursor: 'pointer' }}>
-                                Anuluj
-                            </button>
+                            <button type="submit" style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: 'var(--accent)', color: '#fff', fontSize: '13px', cursor: 'pointer' }}>Zapisz</button>
+                            <button type="button" onClick={() => setShowForm(false)} style={{ padding: '8px 20px', borderRadius: '8px', border: '0.5px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontSize: '13px', cursor: 'pointer' }}>Anuluj</button>
                         </div>
                     </form>
                 </div>
@@ -138,9 +144,23 @@ function Accounts() {
                             </div>
                             <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>Saldo aktualne</div>
                         </div>
+                        <button onClick={() => setDeleteId(account.id)} style={{
+                            padding: '6px 12px', borderRadius: '8px', border: 'none',
+                            background: '#fee2e2', color: '#b91c1c',
+                            fontSize: '12px', cursor: 'pointer'
+                        }}>
+                            <i className="ti ti-trash" style={{ fontSize: '14px' }} aria-hidden="true"></i>
+                        </button>
                     </div>
                 ))}
             </div>
+
+            <ConfirmModal
+                isOpen={deleteId !== null}
+                message="Czy na pewno chcesz usunąć to konto? Tej akcji nie można cofnąć."
+                onConfirm={handleDelete}
+                onCancel={() => setDeleteId(null)}
+            />
         </div>
     )
 }

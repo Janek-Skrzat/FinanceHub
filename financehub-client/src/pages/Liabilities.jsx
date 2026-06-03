@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axiosInstance from '../api/axiosInstance'
 import { useToast } from '../context/ToastContext'
+import ConfirmModal from '../components/ConfirmModal'
 
 function Liabilities() {
     const [liabilities, setLiabilities] = useState([])
@@ -10,12 +11,11 @@ function Liabilities() {
     const [monthlyPayment, setMonthlyPayment] = useState('')
     const [deadline, setDeadline] = useState('')
     const [showForm, setShowForm] = useState(false)
+    const [deleteId, setDeleteId] = useState(null)
     const { showToast } = useToast()
 
-
     useEffect(() => {
-        axiosInstance.get('/liability')
-            .then(response => setLiabilities(response.data))
+        axiosInstance.get('/liability').then(response => setLiabilities(response.data))
     }, [])
 
     const handleSubmit = async (e) => {
@@ -33,9 +33,22 @@ function Liabilities() {
             setName(''); setTotalAmount(''); setRemainingAmount('')
             setMonthlyPayment(''); setDeadline('')
             setShowForm(false)
-            showToast('Zobowiązania dodane!')
+            showToast('Zobowiązanie dodane!')
         } catch (error) {
             showToast('Błąd', 'error')
+        }
+    }
+
+    const handleDelete = async () => {
+        try {
+            await axiosInstance.delete(`/liability/${deleteId}`)
+            const response = await axiosInstance.get('/liability')
+            setLiabilities(response.data)
+            setDeleteId(null)
+            showToast('Zobowiązanie usunięte!')
+        } catch (error) {
+            showToast('Błąd usuwania', 'error')
+            setDeleteId(null)
         }
     }
 
@@ -118,13 +131,21 @@ function Liabilities() {
                                         </div>
                                     </div>
                                 </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: '16px', fontWeight: '500', color: '#b91c1c' }}>
-                                        {liability.remainingAmount.toLocaleString()} PLN
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div style={{ fontSize: '16px', fontWeight: '500', color: '#b91c1c' }}>
+                                            {liability.remainingAmount.toLocaleString()} PLN
+                                        </div>
+                                        <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                                            z {liability.totalAmount.toLocaleString()} PLN
+                                        </div>
                                     </div>
-                                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-                                        z {liability.totalAmount.toLocaleString()} PLN
-                                    </div>
+                                    <button onClick={() => setDeleteId(liability.id)} style={{
+                                        padding: '6px 10px', borderRadius: '8px', border: 'none',
+                                        background: '#fee2e2', color: '#b91c1c', cursor: 'pointer'
+                                    }}>
+                                        <i className="ti ti-trash" style={{ fontSize: '14px' }} aria-hidden="true"></i>
+                                    </button>
                                 </div>
                             </div>
                             <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px' }}>
@@ -137,6 +158,13 @@ function Liabilities() {
                     )
                 })}
             </div>
+
+            <ConfirmModal
+                isOpen={deleteId !== null}
+                message="Czy na pewno chcesz usunąć to zobowiązanie? Tej akcji nie można cofnąć."
+                onConfirm={handleDelete}
+                onCancel={() => setDeleteId(null)}
+            />
         </div>
     )
 }

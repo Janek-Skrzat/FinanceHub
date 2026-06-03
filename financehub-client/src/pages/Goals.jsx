@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axiosInstance from '../api/axiosInstance'
 import { useToast } from '../context/ToastContext'
-
+import ConfirmModal from '../components/ConfirmModal'
 
 function Goals() {
     const [goals, setGoals] = useState([])
@@ -10,12 +10,11 @@ function Goals() {
     const [currentAmount, setCurrentAmount] = useState('')
     const [deadline, setDeadline] = useState('')
     const [showForm, setShowForm] = useState(false)
+    const [deleteId, setDeleteId] = useState(null)
     const { showToast } = useToast()
 
-
     useEffect(() => {
-        axiosInstance.get('/goal')
-            .then(response => setGoals(response.data))
+        axiosInstance.get('/goal').then(response => setGoals(response.data))
     }, [])
 
     const handleSubmit = async (e) => {
@@ -32,9 +31,21 @@ function Goals() {
             setName(''); setTargetAmount(''); setCurrentAmount(''); setDeadline('')
             setShowForm(false)
             showToast('Cel dodany!')
-
         } catch (error) {
             showToast('Błąd', 'error')
+        }
+    }
+
+    const handleDelete = async () => {
+        try {
+            await axiosInstance.delete(`/goal/${deleteId}`)
+            const response = await axiosInstance.get('/goal')
+            setGoals(response.data)
+            setDeleteId(null)
+            showToast('Cel usunięty!')
+        } catch (error) {
+            showToast('Błąd usuwania', 'error')
+            setDeleteId(null)
         }
     }
 
@@ -115,11 +126,19 @@ function Goals() {
                                         )}
                                     </div>
                                 </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--accent)' }}>
-                                        {goal.currentAmount.toLocaleString()} / {goal.targetAmount.toLocaleString()} PLN
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--accent)' }}>
+                                            {goal.currentAmount.toLocaleString()} / {goal.targetAmount.toLocaleString()} PLN
+                                        </div>
+                                        <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{percent.toFixed(0)}% celu</div>
                                     </div>
-                                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{percent.toFixed(0)}% celu</div>
+                                    <button onClick={() => setDeleteId(goal.id)} style={{
+                                        padding: '6px 10px', borderRadius: '8px', border: 'none',
+                                        background: '#fee2e2', color: '#b91c1c', cursor: 'pointer'
+                                    }}>
+                                        <i className="ti ti-trash" style={{ fontSize: '14px' }} aria-hidden="true"></i>
+                                    </button>
                                 </div>
                             </div>
                             <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px' }}>
@@ -129,6 +148,13 @@ function Goals() {
                     )
                 })}
             </div>
+
+            <ConfirmModal
+                isOpen={deleteId !== null}
+                message="Czy na pewno chcesz usunąć ten cel? Tej akcji nie można cofnąć."
+                onConfirm={handleDelete}
+                onCancel={() => setDeleteId(null)}
+            />
         </div>
     )
 }
