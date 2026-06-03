@@ -11,6 +11,7 @@ function Dashboard() {
     useEffect(() => {
         axiosInstance.get('/dashboard/networth')
             .then(response => setNetWorth(response.data))
+        document.title = 'Dashboard — FinanceHub'
     }, [])
 
     const handleLogout = () => {

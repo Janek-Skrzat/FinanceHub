@@ -23,6 +23,7 @@ function Transactions() {
     useEffect(() => {
         axiosInstance.get('/transaction').then(r => setTransactions(r.data))
         axiosInstance.get('/subcategory').then(r => setSubCategories(r.data))
+        document.title = 'Transakcje — FinanceHub'
     }, [])
 
     const filtered = transactions.filter(t => {

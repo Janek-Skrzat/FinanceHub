@@ -16,6 +16,8 @@ function Liabilities() {
 
     useEffect(() => {
         axiosInstance.get('/liability').then(response => setLiabilities(response.data))
+        document.title = 'Zobowiązania — FinanceHub'
+
     }, [])
 
     const handleSubmit = async (e) => {

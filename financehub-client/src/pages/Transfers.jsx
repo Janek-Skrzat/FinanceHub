@@ -17,6 +17,8 @@ function Transfers() {
     useEffect(() => {
         axiosInstance.get('/account').then(r => setAccounts(r.data))
         axiosInstance.get('/transfer').then(r => setTransfers(r.data))
+        document.title = 'Transfery — FinanceHub'
+
     }, [])
 
     const handleSubmit = async (e) => {

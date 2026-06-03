@@ -28,6 +28,8 @@ function Charts() {
     useEffect(() => {
         axiosInstance.get('/transaction').then(r => setTransactions(r.data))
         axiosInstance.get('/subcategory').then(r => setSubCategories(r.data))
+        document.title = 'Wykresy — FinanceHub'
+
     }, [])
 
     const getSubCategoryName = (id) => subCategories.find(s => s.id === id)?.name || `Podkat. ${id}`

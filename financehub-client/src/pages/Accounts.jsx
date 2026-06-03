@@ -23,6 +23,7 @@ function Accounts() {
     useEffect(() => {
         axiosInstance.get('/account')
             .then(response => setAccounts(response.data))
+        document.title = 'Konta — FinanceHub'
     }, [])
 
     const handleSubmit = async (e) => {

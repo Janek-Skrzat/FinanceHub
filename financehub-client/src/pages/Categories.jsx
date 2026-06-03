@@ -11,6 +11,8 @@ function Categories() {
     useEffect(() => {
         axiosInstance.get('/category')
             .then(response => setCategories(response.data))
+        document.title = 'Kategorie — FinanceHub'
+
     }, [])
 
     const handleSubmit = async (e) => {
@@ -27,7 +29,7 @@ function Categories() {
         }
     }
 
-    const inputStyle = { 
+    const inputStyle = {
         width: '100%', padding: '8px 12px', borderRadius: '8px',
         border: '0.5px solid var(--border)', background: 'var(--bg-primary)',
         color: 'var(--text-primary)', fontSize: '13px', outline: 'none'

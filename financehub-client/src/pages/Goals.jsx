@@ -15,6 +15,8 @@ function Goals() {
 
     useEffect(() => {
         axiosInstance.get('/goal').then(response => setGoals(response.data))
+        document.title = 'Cele — FinanceHub'
+
     }, [])
 
     const handleSubmit = async (e) => {
