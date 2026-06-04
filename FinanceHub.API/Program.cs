@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using FinanceHub.API.Services;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,34 @@ builder.Services.AddRateLimiter(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new() { Title = "FinanceHub API", Version = "v1" });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Wpisz token JWT"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 var jwtSecret = builder.Configuration["JwtSettings:Secret"]
     ?? throw new InvalidOperationException("JwtSettings:Secret nie jest skonfigurowany");
@@ -38,6 +67,7 @@ builder.Services.AddAuthentication("Bearer")
             ValidateAudience = false
         };
     });
+
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<TransactionService>();
@@ -47,11 +77,11 @@ builder.Services.AddHttpClient<CurrencyService>();
 builder.Services.AddScoped<GoalService>();
 builder.Services.AddScoped<LiabilityService>();
 
-
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
