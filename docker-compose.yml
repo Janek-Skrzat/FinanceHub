@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: financehub-db
+    environment:
+      POSTGRES_USER: financehub_user
+      POSTGRES_PASSWORD: financehub_pass
+      POSTGRES_DB: financehub
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U financehub_user -d financehub"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./FinanceHub.API
+      dockerfile: Dockerfile
+    container_name: financehub-backend
+    ports:
+      - "5165:5165"
+    environment:
+      - ASPNETCORE_URLS=http://+:5165
+      - ConnectionStrings__DefaultConnection=Host=db;Database=financehub;Username=financehub_user;Password=financehub_pass
+      - JwtSettings__Secret=SuperTajnyKluczJWT2026FinanceHub!
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./financehub-client
+      dockerfile: Dockerfile
+    container_name: financehub-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
